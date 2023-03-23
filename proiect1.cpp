@@ -11,7 +11,7 @@ public:
         strcpy(sir,str);
     }
 
-    String(const String& cv){ //constr cu parametru string
+    String(const String& cv){ //constr de copiere
         lg=cv.lg;
         sir= new char[lg+1];
         strcpy(sir,cv.sir);
@@ -73,6 +73,7 @@ class Song{ //clasa melodii
     String title;
     Artist artist;
     int year;
+    int time;
 
 public:
     //setters
@@ -88,6 +89,10 @@ public:
         year=y;
     }
 
+    void setSongTime(int t){ //setter durata melodie
+        time=t;
+    }
+
     //getters
     String getSongTitle() const{ //getter titlu melodie
         return title;
@@ -101,6 +106,9 @@ public:
         return year;
     }
 
+    int getSongTime() const{
+        return time;
+    }
 };
 
 class Album{
@@ -110,7 +118,7 @@ class Album{
     Artist artist; //artistul albumului
     int year; //anul lansarii albumului
     int price; //pretul albumului
-    //int discount1=0, discount2=0; //folosim discount1 si discount2 initializate cu 0, pentru ca in
+    int discount=0; //folosim discount initializat cu 0, pentru ca in
     //momentul in care se aplica discountul respectiv, variabila asociata sa devina 1 si sa nu se mai poata 
     //aplica iarasi acest discount
 
@@ -132,24 +140,25 @@ public:
         }
     }
 
-    /*void setDiscount1() {  // daca albumul are mai mult de 10 melodii se aplica o reducere de 3 unitati pe melodie
-        if (discount1==0){
+    void setDiscount() {  // daca albumul are mai mult de 10 melodii se aplica o reducere de 3 unitati pe melodie
+        if (discount==0){
             if (numSongs<10){
                 price=10*numSongs;
-                discount1=1;
             }
             else price=7*numSongs;  
+            if(year<=2015){
+                price/=2;
+            }
+            discount=1; //previne aplicarea discountului de 2 ori
         }
     }
-    void setDiscount2(){
-        if (discount2==0){
-            if(year<=2015){ //daca albumul este mai vechi sau din anul 2015, se aplica o reducere de 50%
-                price=price/2;
-                discount2=1;
-            }
-        }
-    }*/
 
+    int calculateDuration() const{
+        int d=0;
+        for (const auto& song: songs)
+            d+=song.getSongTime();
+        return d;
+    }
 
     String getAlbumTitle() const{ //getter titlu album
         return title;
@@ -243,42 +252,50 @@ int main(){
     tw1.setSongArtist(theweeknd); //ii asociez artistul definit mai sus
     tw1.setSongTitle("Starboy"); //dau nume melodiei
     tw1.setSongYear(2016); //asociez an melodiei
+    tw1.setSongTime(200);
 
     Song tw2;
     tw2.setSongArtist(theweeknd);
     tw2.setSongTitle("False Alarm");
     tw2.setSongYear(2016);
+    tw2.setSongTime(140);
 
     Song tw3;
     tw3.setSongArtist(theweeknd);
     tw3.setSongTitle("Reminder");
     tw3.setSongYear(2017);
+    tw3.setSongTime(134);
 
     Song tw4;
     tw4.setSongArtist(theweeknd);
     tw4.setSongTitle("Love To Lay");
     tw4.setSongYear(2016);
+    tw4.setSongTime(123);
 
     Song tw5;
     tw5.setSongArtist(theweeknd);
     tw5.setSongTitle("A Lonely Night");
     tw5.setSongYear(2016);
+    tw5.setSongTime(90);
 
     Song tw6;
     tw6.setSongArtist(theweeknd);
     tw6.setSongTitle("Die For You");
     tw6.setSongYear(2016);
+    tw6.setSongTime(113);
 
     Song tw7;
     tw7.setSongArtist(theweeknd);
     tw7.setSongTitle("I Feel It Coming");
     tw7.setSongYear(2016);
+    tw7.setSongTime(100);
 
     vector<Song> the_weeknd_songs={tw1,tw2,tw3,tw4,tw5,tw6,tw7}; //fac vector din cantecele definite mai sus
 
     Album album_the_weeknd("Starboy", theweeknd, the_weeknd_songs.size(), the_weeknd_songs, 2016); //creez album cu acest artist, vectorul si adaug celelalte date
     //album_the_weeknd.setDiscount1(), album_the_weeknd.setDiscount2(); //aplic discounts, automat daca nu sunt valabile ele nu se aplica
     cout<<album_the_weeknd<<'\n'; //afisez album
+    cout<<"Durata albumului "<<album_the_weeknd.getAlbumTitle()<<" este: "<<album_the_weeknd.calculateDuration()<<" secunde."<<'\n'<<'\n';
 
     Artist tzanca_uraganu;
     tzanca_uraganu.setArtistAge(32);
