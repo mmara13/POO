@@ -1,6 +1,8 @@
 # Proiect-POO
 Nume proiect: proiect1.cpp
+
 Tema: Am ales ca tema proiectului un music library
+
 Clase: 
   1. String - clasa ce memoreaza elemente de tip string pentru a putea folosi siruri de caractere in alte clase;
   2. Artist - clasa ce memoreaza un string cu numele artistului si un numar ce reprezinta varsta lui;
