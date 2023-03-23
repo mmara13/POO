@@ -11,7 +11,9 @@ Clase:
 Functionalitati: - capabil sa retina o lista de artisti (nume + varsta);
                  - capabil sa retina o lista de melodii (nume + variabila de tip artist + an);
                  - capabil sa retina un album de melodii (nume + vector melodii + nr cantece + variabila de tip artist + an + pret);
-                 - capabil sa calculeze automat, in constructorul clasei Album, pretul unui Album in functie de 2 criterii: daca albumul contine mai mult de 10 melodii, pretul scade cu 3 unitati/melodie; daca albumul este mai vechi de anul 2016, pretul este redus cu 50%;
-                 - capabil sa afiseze un album (afiseaza titlu, numele artistului, anul, lista de melodii si pretul)
+                 - capabil sa calculeze cu ajutorul unei metode, pretul unui Album in functie de 2 criterii: daca albumul contine mai mult de 10 melodii, pretul scade cu 3 unitati/melodie; daca albumul este mai vechi de anul 2016, pretul este redus cu 50%;
+                 - capabil sa calculeze durata unui album in functie de durata melodiilor din acestea, si afisarea ei in secunde prin intermediul unei metode;
+                 - capabil sa afiseze un album (afiseaza titlu, numele artistului, anul si lista de melodii);
                  - capabil sa retina un playlist (titlu playlist + vector melodii + nr melodii) si sa il afiseze in maniera asemanatoare cu album;
+                 
                  
