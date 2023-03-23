@@ -17,6 +17,6 @@ Functionalitati:
 - capabil sa calculeze cu ajutorul unei metode, pretul unui Album in functie de 2 criterii: daca albumul contine mai mult de 10 melodii, pretul scade cu 3 unitati/melodie; daca albumul este mai vechi de anul 2016, pretul este redus cu 50%;
 - capabil sa calculeze durata unui album in functie de durata melodiilor din acesta, si afisarea ei in secunde prin intermediul unei metode;
 - capabil sa afiseze un album (afiseaza titlu, numele artistului, anul si lista de melodii);
-- capabil sa retina un playlist (titlu playlist + vector melodii + nr melodii) si sa il afiseze in maniera asemanatoare cu album;
+- capabil sa retina un playlist (titlu playlist + vector melodii + nr melodii) si sa il afiseze in maniera asemanatoare cu album.
                  
                  
