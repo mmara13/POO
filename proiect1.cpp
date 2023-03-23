@@ -140,7 +140,8 @@ public:
         }
     }
 
-    void setDiscount() {  // daca albumul are mai mult de 10 melodii se aplica o reducere de 3 unitati pe melodie
+    int Discount() {  // daca albumul are mai mult de 10 melodii se aplica o reducere de 3 unitati pe melodie
+        int price=0;
         if (discount==0){
             if (numSongs<10){
                 price=10*numSongs;
@@ -151,6 +152,7 @@ public:
             }
             discount=1; //previne aplicarea discountului de 2 ori
         }
+        return price;
     }
 
     int calculateDuration() const{
@@ -176,9 +178,6 @@ public:
         return year;
     }
 
-    int getAlbumPrice() const{ //getter pret album
-        return price;
-    }
 
     //metoda afisare pe care am inlocuit-o cu supraincarcarea operatorului <<
     /*void print() const {
@@ -196,7 +195,7 @@ ostream & operator << (ostream &out, const Album &a){ //functie pentru suprainca
         out <<i<< ") \""<<song.getSongTitle()<<"\" by "<<song.getSongArtist().getArtistNickname()<<"."<<"\n"; //print titlu cantec si nume artist
         i++;
     }
-    out<<"Price: "<<a.getAlbumPrice()<<"\n";
+    //out<<"Price: "<<a.getAlbumPrice()<<"\n";
     return out;
 }
 
@@ -295,8 +294,8 @@ int main(){
     Album album_the_weeknd("Starboy", theweeknd, the_weeknd_songs.size(), the_weeknd_songs, 2016); //creez album cu acest artist, vectorul si adaug celelalte date
     //album_the_weeknd.setDiscount1(), album_the_weeknd.setDiscount2(); //aplic discounts, automat daca nu sunt valabile ele nu se aplica
     cout<<album_the_weeknd<<'\n'; //afisez album
-    cout<<"Durata albumului "<<album_the_weeknd.getAlbumTitle()<<" este: "<<album_the_weeknd.calculateDuration()<<" secunde."<<'\n'<<'\n';
-
+    cout<<"Durata albumului "<<album_the_weeknd.getAlbumTitle()<<" este: "<<album_the_weeknd.calculateDuration()<<" secunde."<<'\n';
+    cout<<"Pretul albumului "<<album_the_weeknd.getAlbumTitle()<<" este de "<<album_the_weeknd.Discount()<<" RON.\n"<<"\n";
     Artist tzanca_uraganu;
     tzanca_uraganu.setArtistAge(32);
     tzanca_uraganu.setArtistNickname("Tzanca Uraganu");
@@ -407,9 +406,16 @@ int main(){
     a8.setSongYear(2010);
 
     Song a9;
-    a9.setSongArtist(andra);
+    /*a9.setSongArtist(andra);
     a9.setSongTitle("Femeia");
-    a9.setSongYear(2010);
+    a9.setSongYear(2010);*/
+    a9.setSongArtist(andra);
+    char titlumel[30]; 
+    cin>>titlumel; //citire nume cantec de la tastatura
+    a9.setSongTitle(titlumel); //set nume cantec
+    int an; 
+    cin>>an; //citire an melodie de la tastatura
+    a9.setSongYear(an); //set an melodie
 
     vector<Song> andra_songs={a1,a2,a3,a4,a5,a6,a7,a8,a9};
 
