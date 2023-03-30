@@ -1,5 +1,5 @@
 # Proiect-POO
-Nume proiect: proiect1.cpp
+Nume proiect: Music Library
 
 Tema: Am ales ca tema proiectului un music library
 
