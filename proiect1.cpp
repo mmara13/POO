@@ -130,14 +130,7 @@ public:
         numSongs=nr;
         songs=s;
         year=y;
-        if (numSongs<10){
-            price=10*numSongs;
-        }
-        else price=7*numSongs;  
-
-        if(year<=2015){ //daca albumul este mai vechi sau din anul 2015, se aplica o reducere de 50%
-            price=price/2;
-        }
+        
     }
 
     int Discount() {  // daca albumul are mai mult de 10 melodii se aplica o reducere de 3 unitati pe melodie
