@@ -406,16 +406,16 @@ int main(){
     a8.setSongYear(2010);
 
     Song a9;
-    /*a9.setSongArtist(andra);
-    a9.setSongTitle("Femeia");
-    a9.setSongYear(2010);*/
     a9.setSongArtist(andra);
+    a9.setSongTitle("Femeia");
+    a9.setSongYear(2010);
+    /*a9.setSongArtist(andra);
     char titlumel[30]; 
     cin>>titlumel; //citire nume cantec de la tastatura
     a9.setSongTitle(titlumel); //set nume cantec
     int an; 
     cin>>an; //citire an melodie de la tastatura
-    a9.setSongYear(an); //set an melodie
+    a9.setSongYear(an); //set an melodie*/
 
     vector<Song> andra_songs={a1,a2,a3,a4,a5,a6,a7,a8,a9};
 
