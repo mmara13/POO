@@ -2,7 +2,7 @@
 using namespace std;
 
 //EXCEPTII
-class DuplicateLibraryException : public exception{ //clasa care adauga exceptie custom
+class DuplicateLibraryException : public exception{ //clasa care creaza exceptie in cazul in care intr-un Library(var de tip Media) adaugam de doua ori acelasi playlist/album
     string m_mesaj;
 public:
     DuplicateLibraryException(const char* mesaj) : m_mesaj(mesaj) {} //constructor initializare
