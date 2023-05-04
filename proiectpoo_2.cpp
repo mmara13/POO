@@ -1,59 +1,55 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class String{
-    int lg;
-    char* sir;
+//EXCEPTII
+class DuplicateLibraryException : public exception{ //clasa care creaza exceptie in cazul in care intr-un Library(variabila de tip Media) adaugam de doua ori acelasi playlist/album
+    string m_mesaj;
 public:
-    String(const char* str=""){ //constructor cu param pointer char
-        lg=strlen(str);
-        sir= new char[lg+1];
-        strcpy(sir,str);
+    DuplicateLibraryException(const char* mesaj) : m_mesaj(mesaj) {} //constructor initializare
+    //folosesc string din std pt ca nu am implementat toate chestiile si trb c_str() pt convertire string -> mesaj pt afisare la consola
+    virtual const char* what() const noexcept override{ //catch exceptie nu throw
+        return m_mesaj.c_str();
     }
-
-    String(const String& cv){ //constr de copiere
-        lg=cv.lg;
-        sir= new char[lg+1];
-        strcpy(sir,cv.sir);
-    }
-
-    ~String(){ //destructor
-        delete[] sir;
-    }
-
-    String& operator=(const String& cv){ //suprascriere egal
-        if (this!=&cv){
-            delete[] sir;
-            lg=cv.lg;
-            sir = new char[lg+1];
-            strcpy(sir, cv.sir);
-        }
-        return *this;
-    }
-
-    bool operator==(const String& other) const {
-        if (lg != other.lg) {
-            return false;
-        }
-        for (size_t i = 0; i < lg; ++i) {
-            if (sir[i] != other.sir[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    friend ostream& operator<<(ostream& outsys, const String& str); //supraincarcam operatorul <<
 };
 
-ostream& operator<<(ostream& outsys, const String& str){ //definirea functiei ca sa nu fie inline
-        outsys<<str.sir; 
-        return outsys;
-}
+class InvalidSongDurationException : public exception{
+    string m_mesaj;
+public:
+    InvalidSongDurationException(const char* mesaj) : m_mesaj(mesaj) {}
+    virtual const char* what() const noexcept override{
+        return m_mesaj.c_str();
+    }
+};
+
+class InvalidPlaylistNameException : public exception {
+    string m_mesaj;
+public:
+    InvalidPlaylistNameException(const char* mesaj) : m_mesaj(mesaj){}
+    virtual const char* what() const noexcept override{ 
+        return m_mesaj.c_str();
+    }
+};
+
+class InvalidUserAccountException : public exception{
+    string m_mesaj;
+public:
+    InvalidUserAccountException(const char* mesaj) : m_mesaj(mesaj){}
+    virtual const char* what() const noexcept override {
+        return m_mesaj.c_str();
+    }
+};
+
+class InvalidCredentialsException : public exception{
+    string m_mesaj;
+public:
+    InvalidCredentialsException(const char* mesaj) : m_mesaj(mesaj){}
+    virtual const char* what() const noexcept override {
+        return m_mesaj.c_str();
+    }
+};
 
 class Artist{
-    String nickname; //nume artist
+    string nickname; //nume artist
     int age; //varsta artist
 
 public:
@@ -62,7 +58,7 @@ public:
         age=0;
     }
 
-    void setArtistNickname(String n){ //setter pt nume
+    void setArtistNickname(string n){ //setter pt nume
         nickname=n;
     }
 
@@ -70,7 +66,7 @@ public:
         age=v;
     }
 
-    String getArtistNickname() const { //getter nume
+    string getArtistNickname() const { //getter nume
         return nickname;
     }
 
@@ -81,24 +77,24 @@ public:
 };
 
 class Media{ //clasa abstracta Media
-    String title;
+    string title;
 public:
     virtual ~Media() {}
-    virtual String getSongTitle() const {
+    virtual string getSongTitle() const {
         return title;
     }
     virtual void displayDetails() const = 0;
 };
 
 class Song : public Media{ //clasa melodii
-    String title;
+    string title;
     Artist artist;
     int year;
     int time;
 
 public:
     //setters
-    void setSongTitle(String t){ //setter titlu melodie
+    void setSongTitle(string t){ //setter titlu melodie
         title=t;
     }
 
@@ -111,11 +107,13 @@ public:
     }
 
     void setSongTime(int t){ //setter durata melodie
+        if (t<=0) {
+            throw InvalidSongDurationException("Durata melodiei trebuie sa fie pozitiva!");}
         time=t;
     }
 
     //getters
-    virtual String getSongTitle() const override{ //getter titlu melodie suprascris din clasa abstracta Media
+    virtual string getSongTitle() const override{ //getter titlu melodie suprascris din clasa abstracta Media
         return title;
     }
 
@@ -133,20 +131,21 @@ public:
 
     void displayDetails() const override{ //afisare melodie cu toate datele ei
         cout<<"Song: "<<title<<" by "<<artist.getArtistNickname()<<" from "<<year<<" with duration "<<time<<" seconds"<<"\n";}
+ 
 };
 
 class Searchable{
 //interfata ptc nu avem date membre
 public:
     virtual ~Searchable() {}
-    virtual vector<Song> searchByTitle(const String title) = 0;
+    virtual vector<Song> searchByTitle(const string title) = 0;
     //virtual vector<Song> searchByArtist(const Artist artist) = 0; //pt album mut ideea in media si o sterg pe aia de acolo ca era facuta doar ca sa indeplineasca cerinta
-    virtual vector<Song> searchByArtist(const String artist) = 0; //pt playlist (cauta doar stringul cu numele)
+    virtual vector<Song> searchByArtist(const string artist) = 0; //pt playlist (cauta doar stringul cu numele)
     virtual vector<Song> searchByYear(const int year) = 0;
 };
 
 class Album : public Searchable, public Media{
-    String title; //titlu album
+    string title; //titlu album
     vector<Song> songs; //vector cantece din album
     int numSongs; //numar cantece in album
     Artist artist; //artistul albumului
@@ -158,7 +157,7 @@ class Album : public Searchable, public Media{
 
 public:
 
-    Album(String t, Artist a, int nr, vector<Song> s, int y){ //Constructor initializare 
+    Album(string t, Artist a, int nr, vector<Song> s, int y){ //Constructor initializare 
         title=t;
         artist=a;
         numSongs=nr;
@@ -193,7 +192,7 @@ public:
         return numSongs;
     }
 
-    String getAlbumTitle() const{ //getter titlu album
+    string getAlbumTitle() const{ //getter titlu album
         return title;
     }
 
@@ -216,7 +215,7 @@ public:
 
     friend ostream & operator << (ostream &out, const Album &a); //antet functie supraincarcare
 
-    vector<Song> searchByTitle(const String title) override{ //suprascriem functia virtuala din clasa Searchable
+    vector<Song> searchByTitle(const string title) override{ //suprascriem functia virtuala din clasa Searchable
         vector<Song> result;
         for (const auto& song: songs){
             if (song.getSongTitle()==title){
@@ -226,7 +225,7 @@ public:
         return result;
     }
 
-    vector<Song> searchByArtist(const String artist) override{ //suprascriem functia virtuala din clasa Searchable
+    vector<Song> searchByArtist(const string artist) override{ //suprascriem functia virtuala din clasa Searchable
         vector<Song>* result = new vector<Song>; //situatia in care vectorul result va fi sters la iesirea din functie cu destructorul din cls de baza
         for (const auto& song: songs){
             if (song.getSongArtist().getArtistNickname()==artist){
@@ -275,16 +274,16 @@ static void printAlbumDetails(Media* media){
 }
 
 class GenreAlbum : public Album{ //clasa album de gen, mostenire publica
-    String genre; //genul albumului 
+    string genre; //genul albumului 
 
 public:
-    GenreAlbum(String t, Artist a, int nr, vector<Song> s, int y, String g) : Album(t, a, nr, s, y), genre(g){} //constructor initializare pt clasa de baza si genre
+    GenreAlbum(string t, Artist a, int nr, vector<Song> s, int y, string g) : Album(t, a, nr, s, y), genre(g){} //constructor initializare pt clasa de baza si genre
 
-    void setGenre(String g){ //setter gen
+    void setGenre(string g){ //setter gen
         genre=g;
     }
 
-    String getGenre() const{//getter gen
+    string getGenre() const{//getter gen
         return genre;
     }
 
@@ -299,7 +298,7 @@ ostream & operator << (ostream &out, const GenreAlbum &ga){ //suprascriere << pe
 
 
 class Playlist : public Searchable, public Media{ //clasa playlist
-    String title; //titlu playlist
+    string title; //titlu playlist
     vector<Song> songs; //vector de melodii
     int numSongs; //nr cantece
 
@@ -309,13 +308,19 @@ public:
         numSongs=0;
     }
 
-    Playlist(String t, int nr, vector<Song> s){ //constructor cu parametri
-        title=t;
+    Playlist(int nr, vector<Song> s){ //constructor cu parametri
         numSongs=nr;
         songs=s;
     }
 
-    String getPlaylistTitle() const{ //getter nume playlist
+    void setPlaylistName(string t){
+        if (t.size() > 50){
+            throw InvalidPlaylistNameException("Numele playlist-ului este prea lung!");
+        }
+        title=t;
+    }
+
+    string getPlaylistTitle() const{ //getter nume playlist
         return title;
     }
 
@@ -329,7 +334,7 @@ public:
     friend ostream & operator << (ostream &out, const Playlist &p);
 
     //facem acelasi lucru cu functiile virtuale ca la clasa Album
-    vector<Song> searchByTitle(const String title)  override{
+    vector<Song> searchByTitle(const string title)  override{
         vector<Song>* result = new vector<Song>;
         for (const auto& song: songs){
             if (song.getSongTitle()==title){
@@ -339,7 +344,7 @@ public:
         return *result;
     }
 
-    vector<Song> searchByArtist(const String artist) override{
+    vector<Song> searchByArtist(const string artist) override{
         vector<Song>* result = new vector<Song>;
         for (const auto& song: songs){
             if (song.getSongArtist().getArtistNickname()==artist){
@@ -380,17 +385,17 @@ ostream & operator << (ostream &out, const Playlist &p){ //functie pentru suprai
 }
 
 // class User : protected Playlist {
-//     String username; //nume utilizator
-//     String password; //parola
+//     string username; //nume utilizator
+//     string password; //parola
 
 //     public: 
-//         User(String u, String p, String t, int nr, vector<Song> s) : Playlist(t, nr, s), username(u), password(p){} //constructor initializare
+//         User(string u, string p, string t, int nr, vector<Song> s) : Playlist(t, nr, s), username(u), password(p){} //constructor initializare
 
-//         String getUsername() const{ //getter nume utilizator
+//         string getUsername() const{ //getter nume utilizator
 //             return username;
 //         }
 
-//         String getPassword() const{ //getter parola
+//         string getPassword() const{ //getter parola
 //             return password;
 //         }
 
@@ -409,54 +414,84 @@ ostream & operator << (ostream &out, const Playlist &p){ //functie pentru suprai
 
 class UserAccount{ //am adaugat clasa UserAccount pentru a putea avea si clasa User mostenita din ea
 protected:
-    String username; //nume utilizator
-    String password; //parola
+    string username; //nume utilizator
+    string password; //parola
 
-    void changePassword(String thispassword, String newpassword){
+    void changePassword(string thispassword, string newpassword){
         if (thispassword==password) //daca parola introdusa este egala cu parola curenta ca sa se apropie de realitate
             password=newpassword;
     }
 public:
     UserAccount():username(), password(){} //constructor fara parametri
-    UserAccount(String& u, String& p) : username(u), password(p){} //constructor initializare
+    UserAccount(string& u, string& p) : username(u), password(p){} //constructor initializare
 
-    String getUsername() const{ //getter nume utilizator
+    string getUsername() const{ //getter nume utilizator
         return username;
     }
 
-    String getPassword() const{ //getter parola
+    string getPassword() const{ //getter parola
         return password;
     }
     
 };
 
 class User : protected UserAccount{ //mostenire protected
-    String name;
+    string name;
     //UserAccount account;
     vector<Media*> Library; //vector de pointeri la Media
+    static int nrOfUsers; //numarul de utilizatori
+    static const int maxNrOfUsers = 10; //numarul maxim de utilizatori
 
 public:
-    User(String n, String u, String p) : name(n), UserAccount(u,p){} //constructor initializare
+    User(string n, string u, string p) : name(n), UserAccount(u,p){++nrOfUsers;} //constructor initializare
 
-    void changeUserPassword(String thispassword, String newpassword){
+    static int getNumberOfUsers(){ //getter numar utilizatori
+        return nrOfUsers;
+    }
+
+    static bool isMaxUserReached(){
+        return nrOfUsers >= maxNrOfUsers;
+    }
+
+    static int getUsernameLength(User u){
+        return u.username.length();
+    }
+
+    void changeUserPassword(string thispassword, string newpassword){
         changePassword(thispassword, newpassword); //apelez functia din clasa de baza
     }
 
     friend ostream & operator << (ostream &out, const User &u);
 
     void addToLibrary(Media* media){ //adaugam in biblioteca un pointer la media
+        for (const auto& m: Library){
+            if (m == media)
+                throw DuplicateLibraryException("Acest element este deja in biblioteca!");
+        }
+        //altfel adaugam media in biblioteca
         Library.push_back(media); //adaugam in vectorul de pointeri la media un album/playlist deci din nou situatie de upcasting
-        cout<<"Adaugat "<<media->getSongTitle() <<" cu succes in biblioteca!\n";
+        cout<<"Adaugat"<<media->getSongTitle() <<" cu succes in biblioteca!\n";
     }
 
     void displayLibrary() const{ //afisam biblioteca
-        cout<<"Biblioteca utilizatorului "<<name<<":\n";
+        cout<<"\nBiblioteca utilizatorului "<<name<<":\n";
         int index=1;
         for (const auto& media: Library){
             cout<<index<<") ";
             media->displayDetails();
             index++;
         }
+    }
+    
+    void authenticateUser(string u, string pss){
+        if(u.empty() || pss.empty()){
+            throw InvalidCredentialsException("Username sau parola nu pot fi goale!");
+        }
+        if(u!=username || pss!=password){
+            throw InvalidUserAccountException("Username sau parola incorecte!");
+        }
+        //altfel afisam mesaj ca autentificarea s-a efectuat cu succes
+        cout<<"Autentificat cu succes!"<<"\n";
     }
 
 };
@@ -469,11 +504,11 @@ ostream & operator<<(ostream &out, const User &u){
 }
 
 class Mixtape : public Album, public Playlist{ //mostenire multipla
-    String title; //titlu mixtape
+    string title; //titlu mixtape
     public:
-        Mixtape(String t,Artist a, int nrAlbum, vector<Song> albumsongs, int y, int nrPlaylist, vector<Song> playlistsongs) : Album(t,a, nrAlbum, albumsongs,y ), Playlist(t,nrPlaylist, playlistsongs){} //constructor initializare
+        Mixtape(string t,Artist a, int nrAlbum, vector<Song> albumsongs, int y, int nrPlaylist, vector<Song> playlistsongs) : Album(t,a, nrAlbum, albumsongs,y ), Playlist(nrPlaylist, playlistsongs){} //constructor initializare
 
-        String getMixtapeName() const{
+        string getMixtapeName() const{
             return title;
         }
         
@@ -517,6 +552,7 @@ ostream & operator << (ostream &out, const Mixtape &m){
     }
     return out;
 }
+
 int main(){
 
     Artist theweeknd; //creez artist theweeknd
@@ -524,47 +560,27 @@ int main(){
     theweeknd.setArtistNickname("The Weeknd"); //ii setez numele
 
     Song tw1; //adaug primul cantec
+    Song tw2, tw3, tw4, tw5, tw6, tw7; //adaug restul cantecelor
+
+try{
     tw1.setSongArtist(theweeknd); //ii asociez artistul definit mai sus
     tw1.setSongTitle("Starboy"); //dau nume melodiei
     tw1.setSongYear(2016); //asociez an melodiei
     tw1.setSongTime(200);
 
-    Song tw2;
-    tw2.setSongArtist(theweeknd);
-    tw2.setSongTitle("False Alarm");
-    tw2.setSongYear(2016);
-    tw2.setSongTime(140);
+    tw2.setSongArtist(theweeknd); tw2.setSongTitle("False Alarm"); tw2.setSongYear(2016); tw2.setSongTime(140);
 
-    Song tw3;
-    tw3.setSongArtist(theweeknd);
-    tw3.setSongTitle("Reminder");
-    tw3.setSongYear(2017);
-    tw3.setSongTime(134);
+    tw3.setSongArtist(theweeknd); tw3.setSongTitle("Reminder"); tw3.setSongYear(2017); tw3.setSongTime(134);
 
-    Song tw4;
-    tw4.setSongArtist(theweeknd);
-    tw4.setSongTitle("Love To Lay");
-    tw4.setSongYear(2016);
-    tw4.setSongTime(123);
+    tw4.setSongArtist(theweeknd); tw4.setSongTitle("Love To Lay"); tw4.setSongYear(2016); tw4.setSongTime(123);
 
-    Song tw5;
-    tw5.setSongArtist(theweeknd);
-    tw5.setSongTitle("A Lonely Night");
-    tw5.setSongYear(2016);
-    tw5.setSongTime(90);
+    tw5.setSongArtist(theweeknd); tw5.setSongTitle("A Lonely Night"); tw5.setSongYear(2016); tw5.setSongTime(90);
 
-    Song tw6;
-    tw6.setSongArtist(theweeknd);
-    tw6.setSongTitle("Die For You");
-    tw6.setSongYear(2016);
-    tw6.setSongTime(113);
+    tw6.setSongArtist(theweeknd); tw6.setSongTitle("Die For You"); tw6.setSongYear(2016); tw6.setSongTime(113);
 
-    Song tw7;
-    tw7.setSongArtist(theweeknd);
-    tw7.setSongTitle("I Feel It Coming");
-    tw7.setSongYear(2016);
-    tw7.setSongTime(100);
-
+    tw7.setSongArtist(theweeknd); tw7.setSongTitle("I Feel It Coming"); tw7.setSongYear(2016); tw7.setSongTime(100);
+} catch (const InvalidSongDurationException& e) {
+    cout <<"Eroare: "<< e.what() << '\n';}
     vector<Song> the_weeknd_songs1={tw1,tw2,tw3,tw4,tw5,tw6,tw7}; //fac vector din cantecele definite mai sus
 
     Album album_the_weeknd("Starboy", theweeknd, the_weeknd_songs1.size(), the_weeknd_songs1, 2016); //creez album cu acest artist, vectorul si adaug celelalte date
@@ -576,179 +592,97 @@ int main(){
     tzanca_uraganu.setArtistAge(32);
     tzanca_uraganu.setArtistNickname("Tzanca Uraganu");
 
-    Song tz1;
-    tz1.setSongArtist(tzanca_uraganu);
-    tz1.setSongTitle("Trotinete");
-    tz1.setSongYear(2023);
+    Song tz1; Song tz2; Song tz3; Song tz4; Song tz5; Song tz6; Song tz7; Song tz8; Song tz9; Song tz10; Song tz11;
 
-    Song tz2;
-    tz2.setSongArtist(tzanca_uraganu);
-    tz2.setSongTitle("Havana");
-    tz2.setSongYear(2022);
+try{
+    tz1.setSongArtist(tzanca_uraganu); tz1.setSongTitle("Trotinete"); tz1.setSongYear(2023); tz1.setSongTime(120);
 
-    Song tz3;
-    tz3.setSongArtist(tzanca_uraganu);
-    tz3.setSongTitle("Banii");
-    tz3.setSongYear(2021);
+    tz2.setSongArtist(tzanca_uraganu); tz2.setSongTitle("Havana"); tz2.setSongYear(2022); tz2.setSongTime(100);
 
-    Song tz4;
-    tz4.setSongArtist(tzanca_uraganu);
-    tz4.setSongTitle("Alo baza baza");
-    tz4.setSongYear(2023);
+    tz3.setSongArtist(tzanca_uraganu); tz3.setSongTitle("Banii"); tz3.setSongYear(2021); tz3.setSongTime(90);
 
-    Song tz5;
-    tz5.setSongArtist(tzanca_uraganu);
-    tz5.setSongTitle("Te-am vazut fara inel");
-    tz5.setSongYear(2022);
+    tz4.setSongArtist(tzanca_uraganu); tz4.setSongTitle("Alo baza baza"); tz4.setSongYear(2023); tz4.setSongTime(110);
 
-    Song tz6;
-    tz6.setSongArtist(tzanca_uraganu);
-    tz6.setSongTitle("Buzele Cu Rosu Inchis");
-    tz6.setSongYear(2021);
+    tz5.setSongArtist(tzanca_uraganu); tz5.setSongTitle("Te-am vazut fara inel"); tz5.setSongYear(2022); tz5.setSongTime(130);
 
-    Song tz7;
-    tz7.setSongArtist(tzanca_uraganu);
-    tz7.setSongTitle("Hai ca m-ai sedus");
-    tz7.setSongYear(2022);
+    tz6.setSongArtist(tzanca_uraganu); tz6.setSongTitle("Buzele Cu Rosu Inchis"); tz6.setSongYear(2021); tz6.setSongTime(140);
 
-    Song tz8;
-    tz8.setSongArtist(tzanca_uraganu);
-    tz8.setSongTitle("Cu Lumina Stinsa");
-    tz8.setSongYear(2022);
+    tz7.setSongArtist(tzanca_uraganu); tz7.setSongTitle("Hai ca m-ai sedus"); tz7.setSongYear(2022); tz7.setSongTime(150);
 
-    Song tz9;
-    tz9.setSongArtist(tzanca_uraganu);
-    tz9.setSongTitle("S-au Unit Legendele");
-    tz9.setSongYear(2021);
+    tz8.setSongArtist(tzanca_uraganu); tz8.setSongTitle("Cu Lumina Stinsa"); tz8.setSongYear(2022); tz8.setSongTime(160);
 
-    Song tz10;
-    tz10.setSongArtist(tzanca_uraganu);
-    tz10.setSongTitle("Noapte Golanii");
-    tz10.setSongYear(2020);
+    tz9.setSongArtist(tzanca_uraganu); tz9.setSongTitle("S-au Unit Legendele"); tz9.setSongYear(2021); tz9.setSongTime(170);
 
-    Song tz11;
-    tz11.setSongArtist(tzanca_uraganu);
-    tz11.setSongTitle("Fa spagatu");
-    tz11.setSongYear(2020);
+    tz10.setSongArtist(tzanca_uraganu); tz10.setSongTitle("Noapte Golanii"); tz10.setSongYear(2020); tz10.setSongTime(180);
 
+    tz11.setSongArtist(tzanca_uraganu); tz11.setSongTitle("Fa spagatu"); tz11.setSongYear(2020); tz11.setSongTime(190);
+} catch (const InvalidSongDurationException& e) {
+    cout<<"Eroare: "<<e.what()<<'\n';
+}
     vector<Song> tzanca_uraganu_songs={tz1,tz2,tz3,tz4,tz5,tz6,tz7,tz8,tz9,tz10,tz11};
 
     Album album_tzanca_uraganu("Manele Mentolate", tzanca_uraganu, tzanca_uraganu_songs.size(), tzanca_uraganu_songs, 2023);
     cout<<album_tzanca_uraganu<<'\n';
 
-
     Artist andra;
     andra.setArtistAge(36);
-    andra.setArtistNickname("Andra");
+    andra.setArtistNickname("Andra"); 
 
-    Song a1;
-    a1.setSongArtist(andra);
-    a1.setSongTitle("Eu as da");
-    a1.setSongYear(2010);
+    Song a1; Song a2; Song a3; Song a4; Song a5; Song a6; Song a7; Song a8; Song a9;
+try{
+    a1.setSongArtist(andra); a1.setSongTitle("Eu as da"); a1.setSongYear(2010); a1.setSongTime(120);
 
-    Song a2;
-    a2.setSongArtist(andra);
-    a2.setSongTitle("Nu regret - Cool Version");
-    a2.setSongYear(2010);
+    a2.setSongArtist(andra); a2.setSongTitle("Nu regret - Cool Version"); a2.setSongYear(2010);  a2.setSongTime(100);
 
-    Song a3;
-    a3.setSongArtist(andra);
-    a3.setSongTitle("Vreau sărutarea ta");
-    a3.setSongYear(2010);
+    a3.setSongArtist(andra); a3.setSongTitle("Vreau sărutarea ta"); a3.setSongYear(2010); a3.setSongTime(90);
 
-    Song a4;
-    a4.setSongArtist(andra);
-    a4.setSongTitle("Doar o clipă");
-    a4.setSongYear(2010);
+    a4.setSongArtist(andra); a4.setSongTitle("Doar o clipă"); a4.setSongYear(2010);  a4.setSongTime(110);
 
-    Song a5;
-    a5.setSongArtist(andra);
-    a5.setSongTitle("Ramai cu mine");
-    a5.setSongYear(2010);
+    a5.setSongArtist(andra); a5.setSongTitle("Ramai cu mine"); a5.setSongYear(2010); a5.setSongTime(130);
 
-    Song a6;
-    a6.setSongArtist(andra);
-    a6.setSongTitle("Sarutul Noptilor De Rai");
-    a6.setSongYear(2010);
+    a6.setSongArtist(andra); a6.setSongTitle("Sarutul Noptilor De Rai"); a6.setSongYear(2010); a6.setSongTime(140);
 
-    Song a7;
-    a7.setSongArtist(andra);
-    a7.setSongTitle("Dragostea Ramane");
-    a7.setSongYear(2010);
+    a7.setSongArtist(andra); a7.setSongTitle("Dragostea Ramane"); a7.setSongYear(2010); a7.setSongTime(150);
 
-    Song a8;
-    a8.setSongArtist(andra);
-    a8.setSongTitle("Colț de suflet");
-    a8.setSongYear(2010);
+    a8.setSongArtist(andra); a8.setSongTitle("Colț de suflet"); a8.setSongYear(2010); a8.setSongTime(160);
 
-    Song a9;
-    a9.setSongArtist(andra);
-    a9.setSongTitle("Femeia");
-    a9.setSongYear(2010);
+    a9.setSongArtist(andra); a9.setSongTitle("Femeia"); a9.setSongYear(2010); a9.setSongTime(0);
+} catch (const InvalidSongDurationException& e) {
+    cout<< "Eroare: "<<e.what()<<'\n';
+}
 
     vector<Song> andra_songs={a1,a2,a3,a4,a5,a6,a7,a8,a9};
-
-    Song tw11;
-    tw11.setSongArtist(theweeknd);
-    tw11.setSongTitle("Alone Again");
-    tw11.setSongYear(2020);
-    tw11.setSongTime(250);
-
-    Song tw12;
-    tw12.setSongArtist(theweeknd);
-    tw12.setSongTitle("Too Late");
-    tw12.setSongYear(2020);
-    tw12.setSongTime(239);
-
-    Song tw13;
-    tw13.setSongArtist(theweeknd);
-    tw13.setSongTitle("Hardest To Love");
-    tw13.setSongYear(2020);
-    tw13.setSongTime(211);
-
-    Song tw14;
-    tw14.setSongArtist(theweeknd);
-    tw14.setSongTitle("Scared To Live");
-    tw14.setSongYear(2020);
-    tw14.setSongTime(191);
-
-    Song tw15;
-    tw15.setSongArtist(theweeknd);
-    tw15.setSongTitle("Snowchild");
-    tw15.setSongYear(2020);
-    tw15.setSongTime(247);
-
-    Song tw16;
-    tw16.setSongArtist(theweeknd);
-    tw16.setSongTitle("Escape From LA");
-    tw16.setSongYear(2020);
-    tw16.setSongTime(355);
-
-    Song tw17;
-    tw17.setSongArtist(theweeknd);
-    tw17.setSongTitle("Heartless");
-    tw17.setSongYear(2020);
-    tw17.setSongTime(198);
-
-    Song tw18;
-    tw18.setSongArtist(theweeknd);
-    tw18.setSongTitle("Faith");
-    tw18.setSongYear(2020);
-    tw18.setSongTime(283);
-
-
-    vector<Song> the_weeknd_songs2={tw11,tw12,tw13,tw14,tw15,tw16,tw17,tw18};
-    Album album_the_weeknd2("After Hours", theweeknd, the_weeknd_songs2.size(), the_weeknd_songs2, 2020);
-
-
     //Album album_andra("Iubește-mă azi, iubește-mă mâine", andra, andra_songs.size(), andra_songs, 2010);
     GenreAlbum album_andra("Iubește-mă azi, iubește-mă mâine", andra, andra_songs.size(), andra_songs, 2010, "Pop");
     cout<<album_andra<<'\n';
     //cout<<album_andra.getGenre()<<"Genul aici\n"; l am inclus in suprascriere
 
+//     Song tw11; Song tw12; Song tw13; Song tw14; Song tw15; Song tw16; Song tw17; Song tw18;
+// try{
+//     tw11.setSongArtist(theweeknd); tw11.setSongTitle("Alone Again"); tw11.setSongYear(2020); tw11.setSongTime(250);
+
+//     tw12.setSongArtist(theweeknd); tw12.setSongTitle("Too Late"); tw12.setSongYear(2020); tw12.setSongTime(239);
+
+//     tw13.setSongArtist(theweeknd); tw13.setSongTitle("Hardest To Love"); tw13.setSongYear(2020); tw13.setSongTime(211);
+    
+//     tw14.setSongArtist(theweeknd); tw14.setSongTitle("Scared To Live"); tw14.setSongYear(2020); tw14.setSongTime(191);
+
+//     tw15.setSongArtist(theweeknd); tw15.setSongTitle("Snowchild"); tw15.setSongYear(2020); tw15.setSongTime(247);
+
+//     tw16.setSongArtist(theweeknd); tw16.setSongTitle("Escape From LA"); tw16.setSongYear(2020); tw16.setSongTime(355);
+
+//     tw17.setSongArtist(theweeknd); tw17.setSongTitle("Heartless"); tw17.setSongYear(2020); tw17.setSongTime(198);
+
+//     tw18.setSongArtist(theweeknd); tw18.setSongTitle("Faith"); tw18.setSongYear(2020); tw18.setSongTime(0);
+// } catch (const InvalidSongDurationException& e){
+//     cout<< "Eroare: "<<e.what()<<'\n';
+// }
+//     vector<Song> the_weeknd_songs2={tw11,tw12,tw13,tw14,tw15,tw16,tw17,tw18};
+//     Album album_the_weeknd2("After Hours", theweeknd, the_weeknd_songs2.size(), the_weeknd_songs2, 2020);
 
     vector<Song> others={a1,tz1,tw1,a2,tz2,tz3,tz4,tz5,tz6,tw7,tz8};
-    Playlist muzica("Muzica", others.size(), others);
+    Playlist muzica(others.size(), others);
+    muzica.setPlaylistName("Muzica");
     cout<<muzica<<'\n';
 
     //User myAccount("Mara","parola123","Muzica", others.size(), others );
@@ -757,7 +691,6 @@ int main(){
     User myUser("Mara","mara13", "parola123");
     cout<<myUser<<'\n';
     myUser.changeUserPassword("parola123","parola12345"); //schimb parola
-
 
     Mixtape mixtape1("The Weeknd Mixtape", theweeknd, the_weeknd_songs1.size(), the_weeknd_songs1, 2020, others.size(), others);
     cout<<mixtape1<<"\n";
@@ -793,14 +726,37 @@ int main(){
     for(int i=0; i<media.size(); i++)
         media[i]->displayDetails(); //apelez functia displayDetails() pentru fiecare element din vectorul de pointeri la Media
 
-
-    myUser.addToLibrary(static_cast<Media*>(&album_the_weeknd)); //upcasting iar ca vectorul retine pointeri la media si in el punem album/playlist
-    myUser.addToLibrary(static_cast<Media*>(&album_andra)); //la fel ca sus, pot elimina static_cast dar l-am pus pt upcasting
-
+    try{
+        myUser.addToLibrary(static_cast<Media*>(&album_the_weeknd)); //upcasting iar ca vectorul retine pointeri la media si in el punem album/playlist
+        myUser.addToLibrary(static_cast<Media*>(&album_andra)); //la fel ca sus, pot elimina static_cast dar l-am pus pt upcasting
+        myUser.addToLibrary(static_cast<Media*>(&album_the_weeknd)); //aici ar trb sa arunce exceptie
+    }
+    catch (const DuplicateLibraryException& e){
+        cout<<"Eroare: "<<e.what()<<'\n';
+    }
     myUser.displayLibrary();
 
     //downcasting - verificam daca elementele din media sunt albume
     for (const auto& m : media)
         printAlbumDetails(m);
-    return 0;
+
+    //creare playlist cu o singura melodie pentru a testa exceptia InvalidPlaylistNameEception
+    vector<Song> mz={a1};
+    Playlist plst(1,mz);
+    try{ plst.setPlaylistName("My awesome playlist with a really long name that exceeds the maximum length allowed.");}
+    catch(const InvalidPlaylistNameException& e){
+        cout<<"Eroare: "<<e.what()<<"\n";
+    }
+    cout<<plst;
+
+    try{
+        myUser.authenticateUser("mara13", "mara");
+    }
+    catch (const InvalidUserAccountException& e){
+        cout<<"Eroare: "<<e.what()<<'\n';
+        try{throw InvalidCredentialsException("Autentificare nereusita!");}
+        catch (const InvalidCredentialsException& ee){
+        cout<<"Eroare: "<<ee.what()<<'\n';}
+    }
+ 
 }
