@@ -553,6 +553,8 @@ ostream & operator << (ostream &out, const Mixtape &m){
     return out;
 }
 
+
+int User::nrOfUsers = 0; //initializare variabila statica
 int main(){
 
     Artist theweeknd; //creez artist theweeknd
