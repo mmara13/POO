@@ -13,7 +13,9 @@ Clase:
   7.  Playlist - clasa ce memoreaza un string cu titlul playlistului, un vector de melodii (variabile de tip Song), un numar care semnifica numarul de cantece din playlist **(mostenita din clasa Searchable - pt metodele virtuale de cautare, si din clasa Media pt metoda virtuala de afisare)**;
   8. UserAccount - clasa ce retine doua variabile de tip string: una pentru username si una pentru password. Are ca metoda relevanta changePassword() care permite utilizatorului schimbarea parolei contului;
   9. User - mostenita din clasa UserAccount - adauga la aceasta un string care reprezinta numele utilizatorului, un vector de pointeri la Media care reprezinta diferitele media pe care utilizatorul le are in cont ( playlist-uri/albume/etc.), un numar curent de useri pe care ii avem in program, si un numar maxim de useri pe care ii putem avea;
-  10. Mixtape - clasa mostenita din clasele Album si Playlist - contine un string cu titlul.
+  10. Mixtape - clasa mostenita din clasele Album si Playlist - contine un string cu titlul;
+  11. Track - clasa template - functia play care functioneaza pe orice tip de data;
+  12. SongIterator - clasa iterator.
 
 Exceptii: 
   1. DuplicateLibraryException - clasa de exceptii care extinde std::exception prin care se verifica, in momentul adaugarii unei noi colectii intr-o librarie, daca nu cumva aceasta a mai fost adaugata anterior. Se afiseaza "Acest element este deja in biblioteca!";
@@ -43,4 +45,11 @@ Functionalitati:
 - capabil sa adauge prin intermediul mostenirii un nume acestui user si sa ii atribuie o biblioteca in care se pot adauga diverite tipuri de media;
 - simuleaza autentificare intr-un cont cu ajutorul functiei autheticateUser care verifica daca username-ul si parola sunt bine introduse si sunt cele corecte;
 - capabil sa retina un Mixtape (variabila formata din Album si Playlist, mostenind toate atributele acestora);
+- contine functia play() ce reda date precum Playlist-uri/Albume/Melodii, iar daca sunt altfel de date afiseaza un mesaj spunand ca tipul este necunoscut dar o reda indiferent;
+- functie template printInfo() care afiseaza informatii despre tipul de date folosit;
+- poate parcurge un vector de melodii folosind un iterator;
+- capabil sa caute si sa returneze un vector de melodii dupa artist, folosind functia utilitara copy_if();
+- sorteaza un vector de melodii dupa durata acestora folosind functia utilitara sort();
+- foloseste unique_ptr pentru media in loc de vector de pointeri obisnuiti;
+- foloseste shared_ptr pentru libraria unui user pentru a arata la diferite tipuri de date.
                  
